@@ -11,14 +11,14 @@ type BadgeProps = {
 const Badge = ({ day, index, width, onCheckIn }: BadgeProps) => {
   return (
     <Box
-    className="flex items-stretch"
+    className="flex items-stretch min-w-0 min-h-0"
     p="4"
     width={width}
   >
-    <Card  className="h-full w-full p-8" >
+    <Card  className="h-full w-full p-8">
       <Flex gap="2" direction="column" align="center">
         <div className="w-32 h-32">
-      <Image src={`/badges/${index}.png`} alt="badge" width={400} objectFit="cover" height={400} />
+      <Image src={`/badges/${index}.png`} alt="badge" width={400} className="object-cover" height={400} />
           </div>
       <Text align="center" my="4">
         {day}

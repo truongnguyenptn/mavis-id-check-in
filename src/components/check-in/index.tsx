@@ -110,7 +110,7 @@ const renderStreakUI = (streakData, makeUpStatus) => {
 displayStreakData();
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col">
       <Grid gap="9" mb="4">
         <Heading size="8">Daily Check-in</Heading>
         <Heading color="gray">
@@ -118,7 +118,7 @@ displayStreakData();
         </Heading>
       </Grid>
 
-      <Flex direction="row" gridColumn="7" gap="2" className="py-20 px-24 border border-gray-300 border-radius rounded-l" justify="between">
+      <Flex direction="row" gridColumn="7" gap="2" className="border border-gray-300 border-radius rounded-l" justify="between">
         {days.map((day, i) => (
           <Badge
             key={i}

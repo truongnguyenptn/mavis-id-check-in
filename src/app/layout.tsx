@@ -32,14 +32,14 @@ const fontSans = FontSans({
 })
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
-  
+
   return (
     <html lang="en">
       <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
       <ThemeProvider attribute="class">
       <Theme>
         <main>
-        <div className="container mx-auto">
+        <div className="border border-gray-300 w-full mx-auto backdrop-blur-sm flex-none lg:border-b lg:border-slate-900/10 dark:border-slate-50/[0.06] supports-backdrop-blur:bg-white/95 dark:bg-slate-900/7 px-12 dark:text-dark">
             <div className="w-full flex items-center justify-between flex-wrap gap-2 py-9 flex-col lg:flex-row">
               <Link href="/">
                 <div className="flex items-center gap-2 relative select-none">

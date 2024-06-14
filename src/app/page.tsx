@@ -1,4 +1,5 @@
 import { Checkin } from "src/components/check-in"
+import { Intro } from "src/components/check-in/Intro"
 
 const RootPage = () => {
   return (
