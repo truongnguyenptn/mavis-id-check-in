@@ -19,11 +19,9 @@ export const Auth = () => {
 
     toastSuccess("Auth successfully!");
 
-    if (walletProvider) {
-      const address = await walletProvider.getSigner().getAddress();
+      const address =  walletProvider.getSigner().getAddress();
       console.log("🚀 | Address:", address);
       setSigner(address);
-    }
   };
 
 
