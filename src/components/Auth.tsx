@@ -5,11 +5,12 @@ import { Button } from "src/@/components/ui/button";
 import { useWrapToast } from "src/hooks/useWrapToast";
 import { useWalletgo } from '@roninnetwork/walletgo';
 import { useState } from "react";
+import { JsonRpcSigner } from "@ethersproject/providers";
 
 export const Auth = () => {
   const { toastSuccess } = useWrapToast();
   const { walletProvider } = useWalletgo(); 
-  const [signer, setSigner] = useState(); 
+  const [signer, setSigner] = useState<JsonRpcSigner | undefined>(); 
 
   const handleAuth = async () => {
     const auth = await MavisIdAuth.create({
@@ -20,7 +21,6 @@ export const Auth = () => {
     setSigner(walletProvider?.getSigner()); 
   };
 
-  // Check if signer is available to determine if connected
   const connected = signer !== null;
 
   return (
