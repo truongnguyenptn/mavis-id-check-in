@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  extends: ["@sky-mavis/default", "plugin:@next/next/recommended"],
+  extends: "plugin:@next/next/recommended",
   rules: {
     "@next/next/no-img-element": "off",
     "no-console": "off",
