@@ -11,11 +11,8 @@ type BadgeProps = {
 const Badge = ({ day, index, width, onCheckIn }: BadgeProps) => {
   return (
     <Box
-    shadow="md"
-    border="1px"
     className="flex items-stretch"
-    p={4}
-    _hover={{ shadow: "lg" }}
+    p="4"
     width={width}
   >
     <Card  className="h-full w-full p-8" >
@@ -23,10 +20,10 @@ const Badge = ({ day, index, width, onCheckIn }: BadgeProps) => {
         <div className="w-32 h-32">
       <Image src={`/badges/${index}.png`} alt="badge" width={400} objectFit="cover" height={400} />
           </div>
-      <Text align="center" my={4}>
+      <Text align="center" my="4">
         {day}
       </Text>
-      <Text align="center" color={"gray.400"}>
+      <Text align="center" color="gray">
         Checked
       </Text>
       <Button onClick={onCheckIn}>

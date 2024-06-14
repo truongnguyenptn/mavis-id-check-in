@@ -3,7 +3,6 @@
 import Badge from "./Badge";
 import {  Flex, Grid, Heading } from "@radix-ui/themes";
 import { useWalletgo } from '@roninnetwork/walletgo'
-import { Contract } from 'ethers'
 import { Checkin__factory } from 'src/contracts'
 import { useWrapToast } from "src/hooks/useWrapToast";
 import { addressConfig } from "src/config/address";
@@ -112,7 +111,7 @@ displayStreakData();
 
   return (
     <div className="flex flex-col gap-8">
-      <Grid gap={9} mb={4}>
+      <Grid gap="9" mb="4">
         <Heading size="8">Daily Check-in</Heading>
         <Heading color="gray">
           Earn Rewards: Check-in Daily for Exclusive Bonuses!
