@@ -10,7 +10,7 @@ import { JsonRpcSigner } from "@ethersproject/providers";
 export const Auth = () => {
   const { toastSuccess } = useWrapToast();
   const { walletProvider } = useWalletgo(); 
-  const [signer, setSigner] = useState<string | undefined>(); 
+  const [signer, setSigner] = useState<JsonRpcSigner | undefined>(); 
 
   const handleAuth = async () => {
     await MavisIdAuth.create({
@@ -19,9 +19,7 @@ export const Auth = () => {
 
     toastSuccess("Auth successfully!");
 
-      const address =  walletProvider.getSigner().getAddress();
-      console.log("🚀 | Address:", address);
-      setSigner(address);
+      setSigner(walletProvider?.getSigner());
   };
 
 
