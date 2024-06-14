@@ -118,7 +118,7 @@ displayStreakData();
         </Heading>
       </Grid>
 
-      <Flex direction="row" gridColumn="7" gap="2" className="border border-gray-300 border-radius rounded-l" justify="between">
+      <Flex direction="row" gridColumn="7" gap="2" className="border border-gray-300 border-radius rounded-l py-8 px-4" justify="between">
         {days.map((day, i) => (
           <Badge
             key={i}
