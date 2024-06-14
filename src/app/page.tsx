@@ -1,4 +1,3 @@
-import { Intro } from "src/components/Intro"
 import { Checkin } from "src/components/check-in"
 
 const RootPage = () => {

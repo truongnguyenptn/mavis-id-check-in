@@ -1,13 +1,12 @@
 
 'use client'
 import Badge from "./Badge";
-import { Container, Flex, Grid, Heading } from "@radix-ui/themes";
-import { checkin } from "../user-action/DailyCheckin";
+import {  Flex, Grid, Heading } from "@radix-ui/themes";
 import { useWalletgo } from '@roninnetwork/walletgo'
-import { Contract, providers } from 'ethers'
-import { CheckinContractConfig } from 'src/contracts'
+import { Contract } from 'ethers'
+import { Checkin__factory } from 'src/contracts'
 import { useWrapToast } from "src/hooks/useWrapToast";
-import { parseUnits } from "ethers/lib/utils";
+import { addressConfig } from "src/config/address";
 
 type Data = {
   collected: {
@@ -42,13 +41,11 @@ export const Checkin =  () => {
   
       if (!signer) throw new Error("No signer available");
 
-      const { abi, address } = CheckinContractConfig;
-      const contract = new Contract(address, abi, signer);
-
+      const contract = Checkin__factory.connect(addressConfig.checkin, signer);
       const userAddress = await signer.getAddress();
 
       const transaction = await contract.activateStreak(userAddress);
-      await transaction.wait(); 
+      await transaction.wait();
 
       toastSuccess("You have successfully checked in!");
     } catch (error) {
@@ -68,9 +65,7 @@ export const Checkin =  () => {
             throw new Error("No signer available");
         }
 
-        const { abi, address } = CheckinContractConfig;
-        const contract = new Contract(address, abi, signer);
-
+        const contract = Checkin__factory.connect(addressConfig.checkin, signer);
         const userAddress = await signer.getAddress();
         
         // Fetch the streak data
