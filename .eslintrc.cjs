@@ -1,6 +1,11 @@
 module.exports = {
   root: true,
-  extends: ["plugin:@next/next/recommended"],
+  env: {
+    browser: true,
+    es2021: true,
+    node: true,
+  },
+  plugins: ['@typescript-eslint', 'simple-import-sort'],
   rules: {
     "@next/next/no-img-element": "off",
     "no-console": "off",
