@@ -1,7 +1,7 @@
 import { Box, Text, Card, Flex, Button } from "@radix-ui/themes";
 import Image from "next/image";
 import { cn } from '../../@/lib/utils';
-
+import ClaimedIcon from 'public/icons/check.svg'
 type BadgeProps = {
   day: string;
   index: number;
@@ -23,17 +23,27 @@ const Badge = ({ day, index, width, onCheckIn, checkedIn, makeUpPossible, hasChe
   const checked = checkedIn;
   return (
     <Box
-      className={cn("flex items-stretch min-w-0 min-h-0", checkedIn && "opacity-100 bg-black bg-opacity-50 backdrop-filter backdrop-blur-md")}
+      className={cn("flex items-stretch min-w-0 min-h-0", checkedIn && "opacity-100 bg-slate-700 bg-opacity-50 backdrop-filter backdrop-blur-md")}
       p="4"
       width={width}
     >
       <Card className="h-full w-full p-8">
       {checked && (
-          <Text className="absolute inset-0 flex items-center justify-center text-white text-lg font-bold">
+        <div  className="absolute inset-0 flex flex-col items-center justify-center">
+          <Text className="text-white text-lg font-bold">
             Claimed
           </Text>
+            <ClaimedIcon
+            color="green"
+            width={32} 
+            height={32} 
+            />
+          </div>
         )}
-        <Flex gap="2" direction="column" align="center">
+        <Flex gap="2" direction="column" align="center" className="
+          transition-all duration-200 ease-in-out
+          opacity-20
+        ">
           <div className="w-32 h-32">
             <Image src={`/badges/${index}.png`} alt="badge" width={400} className="object-cover" height={400} />
           </div>
@@ -41,7 +51,7 @@ const Badge = ({ day, index, width, onCheckIn, checkedIn, makeUpPossible, hasChe
             {day}
           </Text>
           <Text align="center" color="gray">
-            {checkedIn ? 'Checked' : makeUpPossible ? 'Make-up Possible' : 'Not Checked'}
+            {!checkedIn && makeUpPossible && 'Make-up Possible' }
           </Text>
           {index === getDayIndex(new Date()) + 1 && (
             <Button onClick={onCheckIn}>
