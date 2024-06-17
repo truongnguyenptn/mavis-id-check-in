@@ -82,7 +82,7 @@ export const Checkin =  () => {
       const contract = Checkin__factory.connect(addressConfig.checkin, signer);
       const userAddress = await signer.getAddress();
       
-      const transaction = await contract.restoreStreak(userAddress, parseEther("2"), { gasLimit: 50000 }};
+      const transaction = await contract.restoreStreak(userAddress, parseEther("2"), { gasLimit: 50000 });
       await transaction.wait();
       
       toastSuccess('You have successfully restore your streak!');
