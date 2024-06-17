@@ -1,7 +1,7 @@
 
 'use client'
 import Badge from "./Badge";
-import {  Button, Flex, Grid, Heading, Text } from "@radix-ui/themes";
+import {  Button, Flex, Grid, Heading } from "@radix-ui/themes";
 import { useWalletgo } from '@roninnetwork/walletgo'
 import { Checkin__factory } from 'src/contracts'
 import { useWrapToast } from "src/hooks/useWrapToast";
@@ -122,7 +122,7 @@ export const Checkin =  () => {
       <Flex direction="row" gridColumn="7" gap="2" className="border border-gray-300 border-radius rounded-l py-8 px-4" justify="between">
         {days.map((day, i) => (
           <Badge
-            key={i}
+            key={`${days[i]}-day`}
             day={`${days[i]}day`}
             index={i}
             claimed={claimedDays[i]}
