@@ -6,6 +6,7 @@ import { useWalletgo } from '@roninnetwork/walletgo'
 import { Checkin__factory } from 'src/contracts'
 import { useWrapToast } from "src/hooks/useWrapToast";
 import { addressConfig } from "src/config/address";
+import { useEffect, useState } from "react";
 
 type Data = {
   collected: {
@@ -21,68 +22,74 @@ type Data = {
 
 export const Checkin =  () => {
   const { toastSuccess, toastError } = useWrapToast(); // Added toastError for error handling
-  // const [collectedData, setCollectedData] = useState<Data>();
-  // const [update, setUpdate] = useState(0);
+  const [streakData, setStreakData] = useState<any>(null);
+  const [activationStatus, setActivationStatus] = useState<any>(null);
 
-  const days = ["m", "t", "w", "th", "f", "s", "su"];
+  const days = ["1", "2", "3", "4", "5", "6", "7"];
   const dayNames = ["Mon", "Tues", "Wenes", "Thurs", "Fri", "Satur", "Sun"];
-
+  const currentDayIndex = new Date().getDay() - 1; 
 
   const { walletProvider, account } = useWalletgo();
 
   const handleCheckIn = async () => {
     try {
       const signer = walletProvider?.getSigner();
-
-      if (!signer) {
-        throw new Error("No signer available");
-      }
-  
-      if (!signer) throw new Error("No signer available");
-
+      if (!signer) throw new Error('No signer available');
+      
       const contract = Checkin__factory.connect(addressConfig.checkin, signer);
       const userAddress = await signer.getAddress();
-
+      
       const transaction = await contract.activateStreak(userAddress);
       await transaction.wait();
-
-      toastSuccess("You have successfully checked in!");
+      
+      toastSuccess('You have successfully checked in!');
+      fetchStreakData(); // Refresh streak data after successful check-in
     } catch (error) {
-      if (error.code === "CALL_EXCEPTION") {
-        console.error("Transaction failed with CALL_EXCEPTION:", error);
-    } else {
-        console.error("Transaction failed with unknown error:", error);
-    }
-      toastError("Check-in failed. Please try again.");
+      if (error.code === 'CALL_EXCEPTION') {
+        console.error('Transaction failed with CALL_EXCEPTION:', error);
+      } else {
+        console.error('Transaction failed with unknown error:', error);
+      }
+      toastError('Check-in failed. Please try again.');
     }
   };
 
-  const displayStreakData = async () => {
+  const fetchStreakData = async () => {
     try {
-        const signer = walletProvider?.getSigner();
-        if (!signer) {
-            throw new Error("No signer available");
-        }
-
-        const contract = Checkin__factory.connect(addressConfig.checkin, signer);
-        const userAddress = await signer.getAddress();
-        
-        // Fetch the streak data
-        const streakData = await contract.getStreak(userAddress);
-        console.log("Streak Data:", streakData);
-
-        // Fetch the activation status
-        const activationStatus = await contract.getActivationStatus(userAddress);
-        console.log("Activation Status:", activationStatus);
-
-
-        // Render streak data and make-up status in your UI
-        // renderStreakUI(streakData, makeUpStatus);
+      const signer = walletProvider?.getSigner();
+      if (!signer) throw new Error('No signer available');
+      
+      const contract = Checkin__factory.connect(addressConfig.checkin, signer);
+      const userAddress = await signer.getAddress();
+      
+      // Fetch the streak data
+      const [currentStreakCount, lastActivated, longestStreakCount, lostStreakCount] = await contract.getStreak(userAddress);
+      
+      // Fetch the activation status
+      const [isLostStreak, hasCheckedToday] = await contract.getActivationStatus(userAddress);
+      
+      setStreakData({
+        currentStreakCount: currentStreakCount.toString(),
+        lastActivated: new Date(lastActivated.toNumber() * 1000).toLocaleString(),
+        longestStreakCount: longestStreakCount.toString(),
+        lostStreakCount: lostStreakCount.toString(),
+      });
+      
+      setActivationStatus({
+        hasCheckedToday,
+        isLostStreak,
+      });
+      
     } catch (error) {
-        console.error("Failed to fetch streak data:", error);
-        // Handle error
+      console.error('Failed to fetch streak data:', error);
+      toastError('Failed to fetch streak data. Please try again.');
     }
-};
+  };
+
+  useEffect(() => {
+    fetchStreakData();
+  }, [walletProvider, account]);
+
 
 // Function to calculate missed days
 const calculateMissedDays = (lastActivatedTimestamp) => {
@@ -102,13 +109,6 @@ const calculateMakeUpStatus = (streakData, missedDays) => {
     return makeUpStatus;
 };
 
-// Function to render streak data and make-up status in UI
-const renderStreakUI = (streakData, makeUpStatus) => {
-  console.log(streakData,makeUpStatus, "data") 
-    // Render streak data and make-up status in your UI
-};
-displayStreakData();
-
   return (
     <div className="flex flex-col">
       <Grid gap="9" mb="4">
@@ -125,10 +125,25 @@ displayStreakData();
             day={dayNames[i] + "day"}
             index={i}
             width="full"
+            checkedIn={true}
+            hasCheckedToday={activationStatus?.hasCheckedToday}
             onCheckIn={handleCheckIn}
           />
         ))}
       </Flex>
+
+      {streakData && activationStatus && (
+        <div>
+          <h2>Streak Data</h2>
+          <p>Current Streak Count: {streakData.currentStreakCount}</p>
+          <p>Last Activated: {streakData.lastActivated}</p>
+          <p>Longest Streak Count: {streakData.longestStreakCount}</p>
+          <p>Lost Streak Count: {streakData.lostStreakCount}</p>
+          <h2>Activation Status</h2>
+          <p>Has Checked Today: {activationStatus.hasCheckedToday.toString()}</p>
+          <p>Is Lost Streak: {activationStatus.isLostStreak.toString()}</p>
+        </div>
+      )}
 
       </div>
   );
