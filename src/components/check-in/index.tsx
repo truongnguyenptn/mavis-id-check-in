@@ -35,7 +35,7 @@ export const Checkin = () => {
     if (!signer) throw new Error('No signer available');
     const contract = Checkin__factory.connect(addressConfig.checkin, signer);
     const userAddress = await signer.getAddress();
-    
+
     return { contract, userAddress };
   };
 
@@ -89,12 +89,12 @@ export const Checkin = () => {
 
   useEffect(() => {
     fetchStreakData();
-  }, [provider, signer]);
+  }, []);
 
   const claimedDays = streakData
     ? calculateClaimedDays(currentDayIndex, parseInt(streakData.currentStreakCount), activationStatus)
     : [];
-
+  console.log(claimedDays);
   return (
     <div className="flex flex-col">
       <Grid gap="9" mb="4">

@@ -1,6 +1,5 @@
 export const getDayIndex = (date: Date): number => {
-  let dayIndex = (date.getDay() + 6) % 7;
-  return dayIndex;
+  return date.getDay();
 };
 
 export const calculateClaimedDays = (currentDayIndex, currentStreakCount, activationStatus) => {
@@ -13,11 +12,13 @@ export const calculateClaimedDays = (currentDayIndex, currentStreakCount, activa
   }
 
   for (let i = 0; i < currentStreakCount; i++) {
-    let dayIndex = (currentDayIndex - 1 - i + 7) % 7; // Adjust for negative indices
+    let dayIndex = (currentDayIndex - i + 7) % 7; // Adjust for negative indices
     claimedDays[dayIndex] = true;
   }
 
-  claimedDays[currentDayIndex] = hasCheckedToday;
+  if (hasCheckedToday) {
+    claimedDays[currentDayIndex] = true;
+  }
 
   return claimedDays;
 };
