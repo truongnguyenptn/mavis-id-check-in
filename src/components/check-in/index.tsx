@@ -18,7 +18,7 @@ export const Checkin =  () => {
   const { walletProvider, account } = useWalletgo();
 
   const days = ["Mon", "Tues", "Wednes", "Thurs", "Fri", "Satur", "Sun"];
-  const currentDayIndex =  getDayIndex(new Date()) +4;
+  const currentDayIndex =  getDayIndex(new Date());
 
 
   const handleCheckIn = async () => {
