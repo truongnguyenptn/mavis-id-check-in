@@ -1,4 +1,5 @@
 import { MavisIdProvider } from '@sky-mavis/mavis-id-sdk'
+import * as ethers from "ethers"
 
 export class MavisIdManager {
   private static instance: MavisIdManager | null = null
@@ -33,6 +34,10 @@ export class MavisIdManager {
     return accounts[0]
   }
 
+  public getProvider() {
+    return new ethers.providers.Web3Provider(this.provider);
+  }
+  
   disconnect() {
     this.provider?.disconnect()
   }

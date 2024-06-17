@@ -9,13 +9,14 @@ type BadgeProps = {
   onCheckIn: () => void;
   makeUpPossible: boolean;
   claimed: boolean;
-  hasCheckedToday: boolean;
+  hasCheckedToday?: boolean;
   currentDayIndex: number;
 };
 
 
 
 const Badge = ({ day, index, onCheckIn, claimed, makeUpPossible, hasCheckedToday, currentDayIndex }: BadgeProps) => {
+  console.log(hasCheckedToday, index, currentDayIndex)
   return (
     <Box
       className={cn("flex items-stretch min-w-0 min-h-0", claimed && "opacity-100 bg-slate-700 bg-opacity-50 backdrop-filter backdrop-blur-md")}
