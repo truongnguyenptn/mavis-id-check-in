@@ -126,6 +126,7 @@ const calculateMakeUpStatus = (streakData, missedDays) => {
             index={i}
             width="full"
             checkedIn={true}
+            makeUpPossible={true}
             hasCheckedToday={activationStatus?.hasCheckedToday}
             onCheckIn={handleCheckIn}
           />
