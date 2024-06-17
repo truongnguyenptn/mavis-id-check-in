@@ -20,7 +20,7 @@ const getDayIndex = (date: Date): number => {
 
 const Badge = ({ day, index, width, onCheckIn, checkedIn, makeUpPossible, hasCheckedToday }: BadgeProps) => {
   console.log(checkedIn);
-  const checked = hasCheckedToday && index === getDayIndex(new Date());
+  const checked = checkedIn;
   return (
     <Box
       className={cn("flex items-stretch min-w-0 min-h-0", checkedIn && "opacity-100 bg-black bg-opacity-50 backdrop-filter backdrop-blur-md")}
