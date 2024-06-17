@@ -1,35 +1,25 @@
 
 'use client'
 import Badge from "./Badge";
-import {  Flex, Grid, Heading } from "@radix-ui/themes";
+import {  Button, Flex, Grid, Heading, Text } from "@radix-ui/themes";
 import { useWalletgo } from '@roninnetwork/walletgo'
 import { Checkin__factory } from 'src/contracts'
 import { useWrapToast } from "src/hooks/useWrapToast";
 import { addressConfig } from "src/config/address";
 import { useEffect, useState } from "react";
+import { calculateClaimedDays, getDayIndex } from "src/utils";
+import { parseEther } from "ethers/lib/utils";
 
-type Data = {
-  collected: {
-    m: number;
-    t: number;
-    w: number;
-    th: number;
-    f: number;
-    s: number;
-    su: number;
-  };
-};
 
 export const Checkin =  () => {
-  const { toastSuccess, toastError } = useWrapToast(); // Added toastError for error handling
+  const { toastSuccess, toastError } = useWrapToast(); 
   const [streakData, setStreakData] = useState<any>(null);
   const [activationStatus, setActivationStatus] = useState<any>(null);
-
-  const days = ["1", "2", "3", "4", "5", "6", "7"];
-  const dayNames = ["Mon", "Tues", "Wenes", "Thurs", "Fri", "Satur", "Sun"];
-  const currentDayIndex = new Date().getDay() - 1; 
-
   const { walletProvider, account } = useWalletgo();
+
+  const days = ["Mon", "Tues", "Wednes", "Thurs", "Fri", "Satur", "Sun"];
+  const currentDayIndex =  getDayIndex(new Date());
+
 
   const handleCheckIn = async () => {
     try {
@@ -62,10 +52,8 @@ export const Checkin =  () => {
       const contract = Checkin__factory.connect(addressConfig.checkin, signer);
       const userAddress = await signer.getAddress();
       
-      // Fetch the streak data
       const [currentStreakCount, lastActivated, longestStreakCount, lostStreakCount] = await contract.getStreak(userAddress);
       
-      // Fetch the activation status
       const [isLostStreak, hasCheckedToday] = await contract.getActivationStatus(userAddress);
       
       setStreakData({
@@ -86,54 +74,67 @@ export const Checkin =  () => {
     }
   };
 
+  const restoreStreak = async () => {
+    try {
+      const signer = walletProvider?.getSigner();
+      if (!signer) throw new Error('No signer available');
+      
+      const contract = Checkin__factory.connect(addressConfig.checkin, signer);
+      const userAddress = await signer.getAddress();
+      
+      const transaction = await contract.restoreStreak(userAddress, parseEther("2"), { gasLimit: 50000 }};
+      await transaction.wait();
+      
+      toastSuccess('You have successfully restore your streak!');
+      fetchStreakData(); // Refresh streak data after successful restore
+    } catch (error) {
+      if (error.code === 'CALL_EXCEPTION') {
+        console.error('Transaction failed with CALL_EXCEPTION:', error);
+      } else {
+        console.error('Transaction failed with unknown error:', error);
+      }
+      toastError('Restore streak failed. Please try again.');
+    }
+  }
+
   useEffect(() => {
     fetchStreakData();
   }, [walletProvider, account]);
 
+  const claimedDays = streakData
+  ? calculateClaimedDays(currentDayIndex, parseInt(streakData.currentStreakCount), activationStatus)
+  : [];
 
-// Function to calculate missed days
-const calculateMissedDays = (lastActivatedTimestamp) => {
-    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-    const streakLifeTime = 200;
-    const missedDays = Math.floor((currentTime - lastActivatedTimestamp) / streakLifeTime) - 1;
-    return Math.max(missedDays, 0); // Ensure non-negative value
-};
-
-// Function to calculate make-up status
-const calculateMakeUpStatus = (streakData, missedDays) => {
-    const canMakeUp =  1;
-    const makeUpStatus: string[] = [];
-    for (let i = 0; i < missedDays; i++) {
-        makeUpStatus.push(canMakeUp ? "Make-up possible" : "Missed");
-    }
-    return makeUpStatus;
-};
 
   return (
     <div className="flex flex-col">
       <Grid gap="9" mb="4">
         <Heading size="8">Daily Check-in</Heading>
-        <Heading color="gray">
+        <Heading size="6" color="gray">
           Earn Rewards: Check-in Daily for Exclusive Bonuses!
         </Heading>
+          <div className="flex justify-between">
+        <Heading size="5" className="">Checked-in Days This Week: {streakData?.currentStreakCount  || 0}</Heading>
+        <Button size="1" className="p-5" onClick={restoreStreak}>Restore check-in streak</Button>  
+        </div>
       </Grid>
 
       <Flex direction="row" gridColumn="7" gap="2" className="border border-gray-300 border-radius rounded-l py-8 px-4" justify="between">
         {days.map((day, i) => (
           <Badge
             key={i}
-            day={dayNames[i] + "day"}
+            day={`${days[i]}day`}
             index={i}
-            width="full"
-            checkedIn={true}
+            claimed={claimedDays[i]}
             makeUpPossible={true}
             hasCheckedToday={activationStatus?.hasCheckedToday}
             onCheckIn={handleCheckIn}
+            currentDayIndex={currentDayIndex}
           />
         ))}
       </Flex>
 
-      {streakData && activationStatus && (
+      {/* {streakData && activationStatus && (
         <div>
           <h2>Streak Data</h2>
           <p>Current Streak Count: {streakData.currentStreakCount}</p>
@@ -144,7 +145,7 @@ const calculateMakeUpStatus = (streakData, missedDays) => {
           <p>Has Checked Today: {activationStatus.hasCheckedToday.toString()}</p>
           <p>Is Lost Streak: {activationStatus.isLostStreak.toString()}</p>
         </div>
-      )}
+      )} */}
 
       </div>
   );
