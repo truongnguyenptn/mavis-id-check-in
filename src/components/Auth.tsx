@@ -1,32 +1,28 @@
 "use client";
 
-import { MavisIdAuth } from "@sky-mavis/mavis-id-sdk";
 import { Button } from "src/@/components/ui/button";
 import { useWrapToast } from "src/hooks/useWrapToast";
-import { useWalletgo } from '@roninnetwork/walletgo';
 import { useState } from "react";
-import { JsonRpcSigner } from "@ethersproject/providers";
+import { MavisIdManager } from "src/connectors/MavisIdManager";
 
 export const Auth = () => {
   const { toastSuccess } = useWrapToast();
-  const { walletProvider } = useWalletgo(); 
-  const [signer, setSigner] = useState<JsonRpcSigner | undefined>(); 
+  const [address, setAddress] = useState<string | undefined>();
 
   const handleAuth = async () => {
-    await MavisIdAuth.create({
-      clientId: "c9848a4d-8a6e-4e2e-908e-8876ba543dd8",
-    }).connect();
+    const mavisIdManager = MavisIdManager.getInstance();
+    await mavisIdManager.connect();
+    const address = await mavisIdManager.getAddress();
 
-    toastSuccess("Auth successfully!");
-
-      setSigner(walletProvider?.getSigner());
+    if (address) {
+      toastSuccess("Auth successfully!");
+      setAddress(address);
+    }
   };
-
-
 
   return (
     <Button onClick={handleAuth}>
-      {signer ? "Connected" : "Connect"}
+      {address ? address : "Connect"}
     </Button>
   );
 };
