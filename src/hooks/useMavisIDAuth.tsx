@@ -4,20 +4,20 @@ import { useWrapToast } from "src/hooks/useWrapToast";
 
 export const useMavisIDAuth = () => {
   const { toastSuccess, toastError } = useWrapToast();
-  const mavisIdManager = MavisIdManager.getInstance();
+  const [mavisIDManager, setMavisIDInstance] = useState<MavisIdManager | undefined >(MavisIdManager.getInstance());
   const [address, setAddress] = useState<string | undefined>();
 
   useEffect(() => {
     const fetchAddress = async () => {
-      const addr = await mavisIdManager.getAddress();
+      const addr = await mavisIDManager?.getAddress();
       setAddress(addr);
     };
     fetchAddress();
-  }, [mavisIdManager]);
+  }, [mavisIDManager]); // Only run on initial mount or when mavisIDManager changes
 
   const handleAuth = async () => {
-    await mavisIdManager.connect();
-    const addr = await mavisIdManager.getAddress();
+    await mavisIDManager?.connect();
+    const addr = await mavisIDManager?.getAddress();
     if (addr) {
       toastSuccess("Auth successfully!");
       setAddress(addr);
@@ -25,8 +25,9 @@ export const useMavisIDAuth = () => {
   };
 
   const handleDisconnect = async () => {
-    await mavisIdManager.disconnect();
+    await mavisIDManager?.disconnect();
     setAddress(undefined);
+    setMavisIDInstance(undefined);
     toastSuccess("Disconnected successfully!");
   };
 
@@ -39,5 +40,5 @@ export const useMavisIDAuth = () => {
     }
   };
 
-  return { address, handleAuth, handleDisconnect, handleCopyAddress };
+  return { address, handleAuth, handleDisconnect, handleCopyAddress, mavisIDManager };
 };

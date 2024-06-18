@@ -12,7 +12,7 @@ import { mavisIdConnector } from "../connectors/MavisIdConnector"
 
 export const EXPLORER_DOMAIN = "https://app.roninchain.com"
 export const EXPLORER_CDN_URL = "https://cdn.skymavis.com/explorer-cdn"
-const WC_PROJECT_ID = "d2ef97836db7eb390bcb2c1e9847ecdc"
+const WC_PROJECT_ID = "3f896a3a1ed797a2ca8fb36d8c940c7f"
 
 interface IDialogContext {
   open: boolean

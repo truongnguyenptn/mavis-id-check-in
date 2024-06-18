@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { calculateClaimedDays, getDayIndex } from "src/utils";
 import { parseEther } from "ethers/lib/utils";
 import { MavisIdManager } from "src/connectors/MavisIdManager";
+import { useMavisIDAuth } from "src/hooks/useMavisIDAuth";
 
 type StreakData = {
   currentStreakCount: string;
@@ -27,6 +28,7 @@ export const Checkin = () => {
   const [activationStatus, setActivationStatus] = useState<ActivationStatus | null>(null);
   const provider = MavisIdManager.getInstance().getProvider();
   const signer = provider.getSigner();
+  const { address, mavisIDManager } = useMavisIDAuth();
 
   const days = ["Mon", "Tues", "Wednes", "Thurs", "Fri", "Satur", "Sun"];
   const currentDayIndex = getDayIndex(new Date());
@@ -34,17 +36,16 @@ export const Checkin = () => {
   const getContractAndAddress = async () => {
     if (!signer) throw new Error('No signer available');
     const contract = Checkin__factory.connect(addressConfig.checkin, signer);
-    const userAddress = await signer.getAddress();
 
-    return { contract, userAddress };
+    return { contract };
   };
 
   const handleCheckIn = async () => {
     try {
-      const { contract, userAddress } = await getContractAndAddress();
-      const transaction = await contract.activateStreak(userAddress);
+      const { contract } = await getContractAndAddress();
+      const transaction = await contract.activateStreak(address);
       await transaction.wait();
-      
+
       toastSuccess('You have successfully checked in!');
       fetchStreakData(); // Refresh streak data after successful check-in
     } catch (error: any) {
@@ -55,9 +56,9 @@ export const Checkin = () => {
 
   const fetchStreakData = async () => {
     try {
-      const { contract, userAddress } = await getContractAndAddress();
-      const [currentStreakCount, lastActivated, longestStreakCount, lostStreakCount] = await contract.getStreak(userAddress);
-      const [isLostStreak, hasCheckedToday] = await contract.getActivationStatus(userAddress);
+      const { contract } = await getContractAndAddress();
+      const [currentStreakCount, lastActivated, longestStreakCount, lostStreakCount] = await contract.getStreak(address);
+      const [isLostStreak, hasCheckedToday] = await contract.getActivationStatus(address);
 
       setStreakData({
         currentStreakCount: currentStreakCount.toString(),
@@ -77,8 +78,8 @@ export const Checkin = () => {
 
   const restoreStreak = async () => {
     try {
-      const { contract, userAddress } = await getContractAndAddress();
-      const transaction = await contract.restoreStreak(userAddress, parseEther("2"), { gasLimit: 50000 });
+      const { contract } = await getContractAndAddress();
+      const transaction = await contract.restoreStreak(address, parseEther("2"), { gasLimit: 50000 });
       await transaction.wait();
       toastSuccess('You have successfully restored your streak!');
       fetchStreakData(); // Refresh streak data after successful restore
@@ -89,13 +90,19 @@ export const Checkin = () => {
   };
 
   useEffect(() => {
-    fetchStreakData();
-  }, []);
+    if (address) {
+      fetchStreakData();
+    } else {
+      setStreakData(null);
+      setActivationStatus(null);
+    }
+  }, [address]);
 
   const claimedDays = streakData
     ? calculateClaimedDays(currentDayIndex, parseInt(streakData.currentStreakCount), activationStatus)
     : [];
   console.log(claimedDays);
+  console.log({address});
   return (
     <div className="flex flex-col">
       <Grid gap="9" mb="4">
@@ -103,10 +110,15 @@ export const Checkin = () => {
         <Heading size="6" color="gray">
           Earn Rewards: Check-in Daily for Exclusive Bonuses!
         </Heading>
-        <div className="flex justify-between">
-          <Heading size="5">Checked-in Days This Week: {streakData?.currentStreakCount ?? 0}</Heading>
-          <Button size="1" className="p-5" onClick={restoreStreak}>Restore check-in streak</Button>
-        </div>
+        {
+        address && streakData && (
+          <div className="flex justify-between">
+            <Heading size="5">Checked-in Days This Week: {streakData.currentStreakCount ?? 0}</Heading>
+            <Button size="1" className="p-5" onClick={restoreStreak}>Restore check-in streak</Button>
+          </div>
+        )
+        }
+
       </Grid>
 
       <Flex direction="row" gridColumn="7" gap="2" className="border border-gray-300 border-radius rounded-l py-8 px-4" justify="between">

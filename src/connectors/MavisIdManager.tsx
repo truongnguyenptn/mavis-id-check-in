@@ -27,10 +27,6 @@ export class MavisIdManager {
   async getAddress(): Promise<string> {
     const accounts = await this.provider.request<string[]>({ method: 'eth_accounts' })
 
-    if (accounts.length === 0) {
-      throw new Error('No accounts found')
-    }
-
     return accounts[0]
   }
 
