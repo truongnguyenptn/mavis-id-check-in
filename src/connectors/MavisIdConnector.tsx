@@ -38,7 +38,7 @@ class MavisIdConnector extends BaseConnector<MavisIdProvider> {
 
   async connect(chainId: number): Promise<IConnectResult<MavisIdProvider>> {
     const newProvider = MavisIdProvider.create({
-      clientId: "0e188f93-b419-4b0f-8df4-0f976da91ee6",
+      clientId: "c9848a4d-8a6e-4e2e-908e-8876ba543dd8",
       chainId: chainId,
     })
 
