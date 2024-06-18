@@ -10,12 +10,8 @@ import { Theme } from '@radix-ui/themes';
 import { ThemeProvider } from 'next-themes';
 import Link from 'next/link';
 import { ModeToggle } from 'src/@/components/ui/mode-toggle';
-import { MavisIdAuth } from "@sky-mavis/mavis-id-sdk"
-import { Button } from "src/@/components/ui/button"
 import { MavisLogo } from "src/connectors/MavisLogo"
-import { useWalletgoDialog } from "src/hooks/useWalletgoDialog"
-import { useWrapToast } from "src/hooks/useWrapToast"
-import { Auth } from "src/components/Auth"
+import { Auth } from "src/components/auth"
 
 export const metadata: Metadata = {
   applicationName: "Mavis ID Check-in Dapp",
