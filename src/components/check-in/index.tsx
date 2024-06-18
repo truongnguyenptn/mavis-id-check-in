@@ -42,12 +42,18 @@ export const Checkin = () => {
 
   const handleCheckIn = async () => {
     try {
-      const { contract } = await getContractAndAddress();
-      const transaction = await contract.activateStreak(address);
-      await transaction.wait();
 
-      toastSuccess('You have successfully checked in!');
-      fetchStreakData(); // Refresh streak data after successful check-in
+      if (address ) {
+        const transaction = await contract.activateStreak(address);
+        const { contract } = await getContractAndAddress();
+
+        await transaction.wait();
+        toastSuccess('You have successfully checked in!');
+        fetchStreakData(); // Refresh streak data after successful check-in
+      }
+   
+
+
     } catch (error: any) {
       console.error('Transaction failed:', error);
       toastError('Check-in failed. Please try again.');
@@ -56,20 +62,23 @@ export const Checkin = () => {
 
   const fetchStreakData = async () => {
     try {
-      const { contract } = await getContractAndAddress();
-      const [currentStreakCount, lastActivated, longestStreakCount, lostStreakCount] = await contract.getStreak(address);
-      const [isLostStreak, hasCheckedToday] = await contract.getActivationStatus(address);
-
-      setStreakData({
-        currentStreakCount: currentStreakCount.toString(),
-        lastActivated: new Date(lastActivated.toNumber() * 1000).toLocaleString(),
-        longestStreakCount: longestStreakCount.toString(),
-        lostStreakCount: lostStreakCount.toString(),
-      });
-      setActivationStatus({
-        hasCheckedToday,
-        isLostStreak,
-      });
+      if (address) {
+        const { contract } = await getContractAndAddress();
+        const [currentStreakCount, lastActivated, longestStreakCount, lostStreakCount] = await contract.getStreak(address);
+        const [isLostStreak, hasCheckedToday] = await contract.getActivationStatus(address);
+  
+        setStreakData({
+          currentStreakCount: currentStreakCount.toString(),
+          lastActivated: new Date(lastActivated.toNumber() * 1000).toLocaleString(),
+          longestStreakCount: longestStreakCount.toString(),
+          lostStreakCount: lostStreakCount.toString(),
+        });
+        setActivationStatus({
+          hasCheckedToday,
+          isLostStreak,
+        });
+      }
+  
     } catch (error) {
       console.error('Failed to fetch streak data:', error);
       toastError('Failed to fetch streak data. Please try again.');
@@ -78,11 +87,14 @@ export const Checkin = () => {
 
   const restoreStreak = async () => {
     try {
-      const { contract } = await getContractAndAddress();
-      const transaction = await contract.restoreStreak(address, parseEther("2"), { gasLimit: 50000 });
-      await transaction.wait();
-      toastSuccess('You have successfully restored your streak!');
-      fetchStreakData(); // Refresh streak data after successful restore
+      if (address) {
+        const { contract } = await getContractAndAddress();
+        const transaction = await contract.restoreStreak(address, parseEther("2"), { gasLimit: 50000 });
+        await transaction.wait();
+        toastSuccess('You have successfully restored your streak!');
+        fetchStreakData(); // Refresh streak data after successful restore
+      }
+
     } catch (error: any) {
       console.error('Transaction failed:', error);
       toastError('Restore streak failed. Please try again.');
