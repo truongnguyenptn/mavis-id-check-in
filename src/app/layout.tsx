@@ -39,6 +39,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
       <ThemeProvider attribute="class">
       <Theme>
         <main>
+        <WalletContext>
         <div className="border border-gray-300 w-full mx-auto backdrop-blur-sm flex-none lg:border-b lg:border-slate-900/10 dark:border-slate-50/[0.06] supports-backdrop-blur:bg-white/95 dark:bg-slate-900/7 px-12 dark:text-dark">
             <div className="w-full flex items-center justify-between flex-wrap gap-2 py-9 flex-col lg:flex-row">
               <Link href="/">
@@ -58,7 +59,8 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
               </div>
             </div>
           </div>
-          <WalletContext>{children}</WalletContext>
+          {children}
+          </WalletContext>
         </main>
         <Toaster />
         </Theme>
