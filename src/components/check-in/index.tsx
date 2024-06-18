@@ -44,6 +44,7 @@ export const Checkin = () => {
       const { contract, userAddress } = await getContractAndAddress();
       const transaction = await contract.activateStreak(userAddress);
       await transaction.wait();
+      
       toastSuccess('You have successfully checked in!');
       fetchStreakData(); // Refresh streak data after successful check-in
     } catch (error: any) {

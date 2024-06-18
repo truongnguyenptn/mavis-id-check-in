@@ -1,5 +1,6 @@
 export const getDayIndex = (date: Date): number => {
-  return date.getDay();
+  let dayIndex = (date.getDay() + 6) % 7;
+  return dayIndex;
 };
 
 export const calculateClaimedDays = (currentDayIndex, currentStreakCount, activationStatus) => {
