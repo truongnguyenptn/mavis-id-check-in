@@ -44,8 +44,8 @@ export const Checkin = () => {
     try {
 
       if (address ) {
-        const transaction = await contract.activateStreak(address);
         const { contract } = await getContractAndAddress();
+        const transaction = await contract.activateStreak(address);
 
         await transaction.wait();
         toastSuccess('You have successfully checked in!');
